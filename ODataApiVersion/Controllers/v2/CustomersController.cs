@@ -9,7 +9,9 @@ using ODataApiVersion.Models.v2;
 
 namespace ODataApiVersion.Controllers.v2
 {
+    [ApiController]
     [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class CustomersController : ODataController
     {
         private Customer[] _customers = new Customer[]
@@ -32,12 +34,14 @@ namespace ODataApiVersion.Controllers.v2
             }
         };
 
+        [HttpGet]
         [EnableQuery]
         public IActionResult Get()
         {
             return Ok(_customers);
         }
 
+        [HttpGet("{key}")]
         [EnableQuery]
         public IActionResult Get(int key)
         {
