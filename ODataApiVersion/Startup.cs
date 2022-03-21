@@ -59,7 +59,7 @@ namespace ODataApiVersion
                                                       .Filter()
                                                       .OrderBy()
                                                       .AddRouteComponents("api/v1", myODataModelProvider.GetEdmModel("1.0"))    // Adds v1 controller action to v1 and v2 APIs
-                                                      //.AddRouteComponents("api/v2", myODataModelProvider.GetEdmModel("2.0"))    // Adds v2 controller actions to v1 and v2 APIs
+                                                      .AddRouteComponents("api/v2", myODataModelProvider.GetEdmModel("2.0"))    // Adds v2 controller actions to v1 and v2 APIs
                                                       ;
                                                });
 
