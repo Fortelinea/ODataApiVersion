@@ -15,6 +15,12 @@ This is copy of https://github.com/xuzhg/MyAspNetCore/tree/master/src/ODataApiVe
 - Microsoft.AspNetCore.OData 8.0.8
 - Swashbuckle.AspNetCore 6.3.0
 
+### Objective
+
+This goal of this project is to provide a simple working example showing how to configure OData 8.x with Swagger for a versioned API (including multiple versioned controllers and models) using URL prefix routing, such as:
+- http://localhost:5000/api/v1/Customers
+- http://localhost:5000/api/v2/Customers
+
 ### Issues
 
 1. Swagger v1 and v2 show both controllers for each API version.
@@ -48,6 +54,8 @@ Enable OpenAPI/Swagger via customer requirement.
 If you run the sample and send the following request in a Web brower:
 
 `/swagger`, you will get the following (similar) swagger page:
+
+**NOTE:** Executing these queries will result in a 404 error.
 
 ![image](Images/api_versioning_swagger.png)
 
