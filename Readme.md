@@ -5,7 +5,7 @@ This is the project repository for post at: https://devblogs.microsoft.com/odata
 
 For details, please refer to the post.
 
-## Update 3/21/2021
+## Update 3/21/2022
 
 This is copy of https://github.com/xuzhg/MyAspNetCore/tree/master/src/ODataApiVersion
 
