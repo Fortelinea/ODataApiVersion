@@ -5,8 +5,10 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -57,10 +59,12 @@ namespace ODataApiVersion
                                                    opt.Select()
                                                       .Count()
                                                       .Filter()
-                                                      .OrderBy()
-                                                      .AddRouteComponents("api/v1", myODataModelProvider.GetEdmModel("1.0"))    // Adds v1 controller action to v1 and v2 APIs
+                                                      .OrderBy();
+#if !USE_EXTENSIONS
+                                                   opt.AddRouteComponents("api/v1", myODataModelProvider.GetEdmModel("1.0"))    // Adds v1 controller action to v1 and v2 APIs
                                                       .AddRouteComponents("api/v2", myODataModelProvider.GetEdmModel("2.0"))    // Adds v2 controller actions to v1 and v2 APIs
-                                                      ;
+                                                   ;
+#endif
 
                                                    opt.RouteOptions.EnableKeyInParenthesis = false;
                                                    opt.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
@@ -70,10 +74,12 @@ namespace ODataApiVersion
 
             services.TryAddSingleton<IODataModelProvider, MyODataModelProvider>();
 
+#if USE_EXTENSIONS
             // Adds support for ?api-version=1.0
-            //services.TryAddEnumerable(
-            //    ServiceDescriptor.Transient<IApplicationModelProvider, MyODataRoutingApplicationModelProvider>());
-            //services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, MyODataRoutingMatcherPolicy>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IApplicationModelProvider, MyODataRoutingApplicationModelProvider>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, MyODataRoutingMatcherPolicy>());
+#endif
 
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen(

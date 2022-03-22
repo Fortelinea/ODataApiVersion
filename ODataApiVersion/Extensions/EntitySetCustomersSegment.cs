@@ -17,6 +17,7 @@ namespace ODataApiVersion.Extensions
         {
             yield return "/Customers";
             yield return "/Customers/$count";
+            yield return "/v{version:apiVersion}/Customers";
         }
 
         public override bool TryTranslate(ODataTemplateTranslateContext context)

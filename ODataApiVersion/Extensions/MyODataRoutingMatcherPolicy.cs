@@ -75,6 +75,14 @@ namespace ODataApiVersion.Extensions
                 // Get api-version query from HttpRequest?
                 QueryStringApiVersionReader reader = new QueryStringApiVersionReader("api-version");
                 string apiVersionStr = reader.Read(httpContext.Request);
+
+                if (apiVersionStr == null)
+                {
+                    // Get version from Url Segment
+                    UrlSegmentApiVersionReader urlReader = new UrlSegmentApiVersionReader();
+                    apiVersionStr = urlReader.Read(httpContext.Request);
+                }
+
                 if (apiVersionStr == null)
                 {
                     candidates.SetValidity(i, false);

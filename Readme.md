@@ -17,9 +17,15 @@ This is copy of https://github.com/xuzhg/MyAspNetCore/tree/master/src/ODataApiVe
 
 ### Objective
 
-This goal of this project is to provide a simple working example showing how to configure OData 8.x with Swagger for a versioned API (including multiple versioned controllers and models) using URL prefix routing, such as:
+This goal of this project is to provide a simple working example showing how to configure OData 8.x with Swagger for a versioned API using URL prefix routing, such as:
 - http://localhost:5000/api/v1/Customers
 - http://localhost:5000/api/v2/Customers
+
+The API should support multiple versions with:
+- seperate controllers for each version (ex. `ODataApiVersion.Controllers.v1.CustomersController` and `ODataApiVersion.Controllers.v2.CustomersController`)
+- seperate data models for each version (ex. `ODataApiVersion.Models.v1.Customer` and `ODataApiVersion.Models.v2.Customer`)
+
+Using Swagger to generate the docs, there should be a swagger.json for each version defined (ex. `/swagger/v1/swagger.json` and `/swagger/v2/swagger.json`).
 
 ### Issues
 
@@ -28,10 +34,11 @@ This goal of this project is to provide a simple working example showing how to 
 ![image](Images/api_v1v2_sideBySide.png)
 
 2. `\$odata` debug page shows duplicate endpoint mappings.
+v1 controller maps to v1 and v2 endpoints, and v2 controller maps to v1 and v2 templates.
 
 ![image](Images/odata_duplicate_endpoints.png)
 
-3. Swagger v1 executes v1 controller; however, `$select`, `$orderby`, etc. query parameters are missing from Swagger doc although present in OData 7.x.
+3. Swagger v1 executes v1 controller (and v2 executes v2); however, `$select`, `$orderby`, etc. query parameters are missing from Swagger doc although they were present with OData 7.x.
 
 ![image](Images/api_v1_executesCorrectly.png)
 
@@ -45,6 +52,24 @@ This goal of this project is to provide a simple working example showing how to 
 public class CustomersController : ODataController
 ```
 
+### Use Extensions Option
+
+As a thought excersise, I attempted to go back to using the extensions code with updates to look at URL paths for the version. This isn't ideal as the original post descibes OData 8 as having "built-in API versioning functionality via route URL prefix template."
+
+Uncomment the `DefineConstants` lines in ODataApiVersion.csproj to enable the `USE_EXTENSIONS` symbol.
+
+```
+<DefineConstants>$(DefineConstants)TRACE;USE_EXTENSIONS</DefineConstants>
+```
+
+With this symbol defined, please note the following:
+- The controller endpoint URLs are now http://localhost:5000/v1.0/Customers and http://localhost:5000/v2.0/Customers
+- Swagger no longer can discover any controllers/actions. This may require additional configuration.
+- `ApiController` and `Route` attributes are removed from controllers.
+- `EntitySetCustomersSegment` has a new `v{version:apiVersion}` template
+- `MyODataRoutingMatcherPolicy` has an additional attempt to read the version from the URL segment
+
+---
 ## Update at 12/21/2021
 
 Enable OpenAPI/Swagger via customer requirement.

@@ -9,9 +9,11 @@ using ODataApiVersion.Models.v1;
 
 namespace ODataApiVersion.Controllers.v1
 {
-    [ApiController]
     [ApiVersion("1.0")]
+#if !USE_EXTENSIONS
+    [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
+#endif
     public class CustomersController : ODataController
     {
         private Customer[] customers = new Customer[]
