@@ -61,6 +61,11 @@ namespace ODataApiVersion
                                                       .AddRouteComponents("api/v1", myODataModelProvider.GetEdmModel("1.0"))    // Adds v1 controller action to v1 and v2 APIs
                                                       .AddRouteComponents("api/v2", myODataModelProvider.GetEdmModel("2.0"))    // Adds v2 controller actions to v1 and v2 APIs
                                                       ;
+
+                                                   opt.RouteOptions.EnableKeyInParenthesis = false;
+                                                   opt.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
+                                                   opt.RouteOptions.EnableQualifiedOperationCall = false;
+                                                   opt.RouteOptions.EnableUnqualifiedOperationCall = true;
                                                });
 
             services.TryAddSingleton<IODataModelProvider, MyODataModelProvider>();
