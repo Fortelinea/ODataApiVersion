@@ -4,6 +4,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using ODataApiVersion.Models.v2;
 
@@ -13,6 +14,7 @@ namespace ODataApiVersion.Controllers.v2
 #if !USE_EXTENSIONS
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ODataRouteComponent("api/v2")]
 #endif
     public class CustomersController : ODataController
     {
