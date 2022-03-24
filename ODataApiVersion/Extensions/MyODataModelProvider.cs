@@ -28,10 +28,10 @@ namespace ODataApiVersion.Extensions
         {
             switch (version)
             {
-                case "1.0":
+                case "1":
                     return BuildV1Model();
 
-                case "2.0":
+                case "2":
                     return BuildV2Model();
             }
 
@@ -41,7 +41,12 @@ namespace ODataApiVersion.Extensions
         private static IEdmModel BuildV1Model()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.EntitySet<Models.v1.Customer>("Customers");
+            builder.EntitySet<Models.v1.Customer>("Customers")
+                   .EntityType
+                   .Select()
+                   .Count()
+                   .Filter()
+                   .OrderBy();
 
             return builder.GetEdmModel();
         }
@@ -49,7 +54,12 @@ namespace ODataApiVersion.Extensions
         private static IEdmModel BuildV2Model()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.EntitySet<Models.v2.Customer>("Customers");
+            builder.EntitySet<Models.v2.Customer>("Customers")
+                   .EntityType
+                   .Select()
+                   .Count()
+                   .Filter()
+                   .OrderBy();
 
             return builder.GetEdmModel();
         }

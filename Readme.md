@@ -5,6 +5,36 @@ This is the project repository for post at: https://devblogs.microsoft.com/odata
 
 For details, please refer to the post.
 
+## Update 3/24/2022
+
+Added OData7Swagger project with .NET 3.1, OData 7.5.14 and Swashbucklet 6.30 to demonstrate controllers with OData $ parameters generated in Swagger docs.
+
+Fixed issues with ODataApiVerion project:
+### 1. and 2. Swagger/OData v1 and v2 show both controllers for each API version.
+
+Sam Xu and Hassan Habib helped us to add `[ODataRouteComponent("api/vX")]` to the controllers to fix the duplicate route issues.
+
+```
+    [ApiVersion("1")]
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ODataRouteComponent("api/v1")]
+    public class CustomersController : ODataController {...}
+
+    [ApiVersion("2")]
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ODataRouteComponent("api/v2")]
+    public class CustomersController : ODataController {...}
+```
+
+
+### 3. OData $ parameters missing from Swagger docs 
+
+This functionality is provided by Microsoft.AspNetCore.OData.Versioning.ApiExplorer 5.0.0, which doesn't support OData 8.x.
+A workaround was found using https://stackoverflow.com/a/49261778 to manually include the OData parameters for Swagger docs when methods return an `IQuerable<T>`.
+
+---
 ## Update 3/21/2022
 
 This is copy of https://github.com/xuzhg/MyAspNetCore/tree/master/src/ODataApiVersion
@@ -43,14 +73,6 @@ v1 controller maps to v1 and v2 endpoints, and v2 controller maps to v1 and v2 t
 ![image](Images/api_v1_executesCorrectly.png)
 
 ![image](Images/api_v1_odata.png)
-
-4. Controllers require additional attributes to show in Swagger docs at all (`ApiController` and `Route`).
-```
-[ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/[controller]")]
-public class CustomersController : ODataController
-```
 
 ### Use Extensions Option
 

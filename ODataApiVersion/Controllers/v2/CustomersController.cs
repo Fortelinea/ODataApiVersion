@@ -10,7 +10,7 @@ using ODataApiVersion.Models.v2;
 
 namespace ODataApiVersion.Controllers.v2
 {
-    [ApiVersion("2.0")]
+    [ApiVersion("2")]
 #if !USE_EXTENSIONS
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
@@ -18,7 +18,7 @@ namespace ODataApiVersion.Controllers.v2
 #endif
     public class CustomersController : ODataController
     {
-        private Customer[] _customers = new Customer[]
+        private Customer[] customers = new Customer[]
         {
             new Customer
             {
@@ -40,22 +40,19 @@ namespace ODataApiVersion.Controllers.v2
 
         [HttpGet]
         [EnableQuery]
-        public IActionResult Get()
+        public IQueryable<Customer> Get()
         {
-            return Ok(_customers);
+            return customers.AsQueryable();
         }
 
         [HttpGet("{key}")]
         [EnableQuery]
-        public IActionResult Get(int key)
+        public IQueryable<Customer> Get(int key)
         {
-            var customer = _customers.FirstOrDefault(c => c.Id == key);
-            if (customer == null)
-            {
-                return NotFound($"Cannot find customer with Id={key}.");
-            }
+            var customerQuery = customers.Where(c => c.Id == key)
+                                         .AsQueryable();
 
-            return Ok(customer);
+            return customerQuery;
         }
     }
 }

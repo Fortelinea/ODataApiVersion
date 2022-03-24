@@ -1,17 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using OData7Swagger.Models;
 
 namespace OData7Swagger
 {
@@ -27,11 +20,7 @@ namespace OData7Swagger
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcCore();
-            services.AddMvc(options => options.EnableEndpointRouting = false)
-                    .SetCompatibilityVersion(CompatibilityVersion.Latest);
-            
-            services.AddRouting();
+            services.AddMvc(options => options.EnableEndpointRouting = false);
 
             services.AddApiVersioning(options =>
                                       {
@@ -43,7 +32,10 @@ namespace OData7Swagger
             services.AddOData()
                     .EnableApiVersioning();
 
-            services.AddVersionedApiExplorer(options => { options.GroupNameFormat = "'v'V"; });
+            services.AddVersionedApiExplorer(options =>
+                                             {
+                                                 options.GroupNameFormat = "'v'V";
+                                             });
 
             services.AddODataApiExplorer(options =>
             {
@@ -51,15 +43,7 @@ namespace OData7Swagger
                 options.SubstituteApiVersionInUrl = true;
             });
 
-            services.AddSwaggerGen(options =>
-                                   {
-                                       options.OperationFilter<SwaggerDefaultValues>();
-                                       options.OperationFilter<RemoveVersionFromParameter>();
-
-                                       options.DocumentFilter<ReplaceVersionWithExactValueInPath>();
-                                       options.EnableAnnotations();
-                                       options.CustomSchemaIds(t => t.FullName);
-                                   });
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,16 +65,6 @@ namespace OData7Swagger
 
             app.UseMvc(routeBuilder =>
                        {
-
-                           //routeBuilder.Select()
-                           //            .Count()
-                           //            .Filter()
-                           //            .OrderBy();
-                           
-                           //var builder = new ODataConventionModelBuilder(app.ApplicationServices);
-                           //builder.EntitySet<Customer>("Customers");
-                           //routeBuilder.MapODataServiceRoute("ODataRoute", "odata", builder.GetEdmModel());
-
                            routeBuilder.MapVersionedODataRoute("ODataRoute", "api/v{version:apiVersion}", modelBuilder.GetEdmModels());
                        });
 
