@@ -27,15 +27,43 @@ namespace OData7Swagger
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddMvcCore();
+            services.AddMvc(options => options.EnableEndpointRouting = false)
+                    .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            
+            services.AddRouting();
 
-            services.AddOData();
+            services.AddApiVersioning(options =>
+                                      {
+                                          // reporting api versions will return the headers "api-supported-versions" and "api-deprecated-versions"
+                                          options.ReportApiVersions = true;
+                                          options.AssumeDefaultVersionWhenUnspecified = true;
+                                      });
 
-            services.AddSwaggerGen();
+            services.AddOData()
+                    .EnableApiVersioning();
+
+            services.AddVersionedApiExplorer(options => { options.GroupNameFormat = "'v'V"; });
+
+            services.AddODataApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV"; // 'v'major[.minor][-status]
+                options.SubstituteApiVersionInUrl = true;
+            });
+
+            services.AddSwaggerGen(options =>
+                                   {
+                                       options.OperationFilter<SwaggerDefaultValues>();
+                                       options.OperationFilter<RemoveVersionFromParameter>();
+
+                                       options.DocumentFilter<ReplaceVersionWithExactValueInPath>();
+                                       options.EnableAnnotations();
+                                       options.CustomSchemaIds(t => t.FullName);
+                                   });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, VersionedODataModelBuilder modelBuilder)
         {
             if (env.IsDevelopment())
             {
@@ -53,14 +81,17 @@ namespace OData7Swagger
 
             app.UseMvc(routeBuilder =>
                        {
-                           var builder = new ODataConventionModelBuilder(app.ApplicationServices);
-                           builder.EntitySet<Customer>("Customers");
 
-                           routeBuilder.Select()
-                                       .Count()
-                                       .Filter()
-                                       .OrderBy();
-                           routeBuilder.MapODataServiceRoute("ODataRoute", "odata", builder.GetEdmModel());
+                           //routeBuilder.Select()
+                           //            .Count()
+                           //            .Filter()
+                           //            .OrderBy();
+                           
+                           //var builder = new ODataConventionModelBuilder(app.ApplicationServices);
+                           //builder.EntitySet<Customer>("Customers");
+                           //routeBuilder.MapODataServiceRoute("ODataRoute", "odata", builder.GetEdmModel());
+
+                           routeBuilder.MapVersionedODataRoute("ODataRoute", "api/v{version:apiVersion}", modelBuilder.GetEdmModels());
                        });
 
             app.UseSwagger();

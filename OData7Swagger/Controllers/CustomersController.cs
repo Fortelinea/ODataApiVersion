@@ -9,7 +9,8 @@ using OData7Swagger.Models;
 
 namespace OData7Swagger.Controllers
 {
-    //[ODataRoutePrefix("Customers")]
+    [ApiVersion("1")]
+    [ODataRoutePrefix("Customers")]
     public class CustomersController : ODataController
     {
         private Customer[] customers = new Customer[]
@@ -28,12 +29,11 @@ namespace OData7Swagger.Controllers
             }
         };
 
-        [ODataRoute]
         [HttpGet]
         [EnableQuery]
-        public IActionResult Get()
+        public IQueryable<Customer> Get()
         {
-            return Ok(customers);
+            return customers.AsQueryable<Customer>();
         }
 
         [HttpGet("{key}")]
